@@ -180,7 +180,10 @@ PUGI__NS_BEGIN
 		assert(s);
 
 	#ifdef PUGIXML_WCHAR_MODE
-		return wcslen(s);
+		// clang's wcslen returns wrong lengths in short-wchar mode
+		size_t len = 0;
+		while (*s++) len++;
+		return len;
 	#else
 		return strlen(s);
 	#endif
@@ -192,7 +195,12 @@ PUGI__NS_BEGIN
 		assert(src && dst);
 
 	#ifdef PUGIXML_WCHAR_MODE
-		return wcscmp(src, dst) == 0;
+		// clang's wcscmp returns wrong results in short-wchar mode
+		char_t s, d;
+		while ((s = *src++) && (d = *dst++)) {
+			if (s != d) return false;
+		}
+		return !s && !(*dst);
 	#else
 		return strcmp(src, dst) == 0;
 	#endif
@@ -3105,6 +3113,7 @@ PUGI__NS_BEGIN
 		xml_buffered_writer(xml_writer& writer_, xml_encoding user_encoding): writer(writer_), bufsize(0), encoding(get_write_encoding(user_encoding))
 		{
 			PUGI__STATIC_ASSERT(bufcapacity >= 8);
+			memset(buffer, 0, bufcapacity * sizeof(char_t));
 		}
 
 		~xml_buffered_writer()

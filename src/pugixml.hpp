@@ -72,10 +72,19 @@
 #	endif
 #endif
 
+#ifdef LIBJ_USE_UTF32
+#	define LIBJ_UTF_PREFIX U
+#else
+#	define LIBJ_UTF_PREFIX u
+#endif
+
 // Character interface macros
 #ifdef PUGIXML_WCHAR_MODE
 #	define PUGIXML_TEXT(t) L ## t
 #	define PUGIXML_CHAR wchar_t
+#elif defined(PUGIXML_LIBJ_MODE)
+#	define PUGIXML_TEXT(t) LIBJ_UTF_PREFIX ## t
+#	define PUGIXML_CHAR libj::Char
 #else
 #	define PUGIXML_TEXT(t) t
 #	define PUGIXML_CHAR char

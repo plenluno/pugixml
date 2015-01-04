@@ -16,6 +16,10 @@
 
 #define PUGIXML_WCHAR_MODE
 
+#ifdef LIBJ_USE_CXX11
+// #	define PUGIXML_LIBJ_MODE
+#endif
+
 // Uncomment this to disable XPath
 // #define PUGIXML_NO_XPATH
 
